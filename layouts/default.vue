@@ -78,8 +78,13 @@ export default {
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Inspire',
+          title: 'add Employee',
           to: '/inspire',
+        },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'List Employee',
+          to: '/employee',
         },
       ],
       miniVariant: false,

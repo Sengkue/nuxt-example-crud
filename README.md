@@ -338,7 +338,7 @@ export default {
 
 ## VueX or Store
 
-### example store/index.js 
+### example store/index.js
 
 ```javascript
 // store/index.js
@@ -443,8 +443,32 @@ export const actions = {
     })
   },
 }
+```
 
+# Components
 
+## CRUD
+
+### component for update
+
+```javascript
+  watch: {
+    options(value) {
+      const { itemsPerPage, page } = value
+      this.selectEmployee({ per_page: itemsPerPage, page })
+    },
+    singleEmployee: {
+      handler(newVal) {
+        // Assign values to newUser when singleEmployee changes
+        this.newUser.id = newVal.id
+        this.newUser.first_name = newVal.first_name
+        this.newUser.last_name = newVal.last_name
+        this.newUser.email = newVal.email
+        this.newUser.avatar = newVal.avatar
+      },
+      immediate: true,
+    },
+  },
 ```
 
 ## License
