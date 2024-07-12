@@ -34,40 +34,25 @@ These instructions will help you set up the project on your local machine.
    ```
 
 3. white install do this step:
-   ```sh
    ? Project name: test-example
-   ```
-
-? Programming language: JavaScript
-
-? Package manager: Yarn
-
-? UI framework: Vuetify.js
-
-? Template engine: HTML
-
-? Nuxt.js modules: Axios - Promise based HTTP client
-
-? Linting tools: ESLint, Prettier
-
-? Testing framework: None
-
-? Rendering mode: Universal (SSR / SSG)
-
-? Deployment target: Server (Node.js hosting)
-
-? Development tools: (Press <space> to select, <a> to toggle all, <i> to invert selection)
-
-? Continuous integration: None
-
-? Version control system: Git
-
-````
+   ? Programming language: JavaScript
+   ? Package manager: Yarn
+   ? UI framework: Vuetify.js
+   ? Template engine: HTML
+   ? Nuxt.js modules: Axios - Promise based HTTP client
+   ? Linting tools: ESLint, Prettier
+   ? Testing framework: None
+   ? Rendering mode: Universal (SSR / SSG)
+   ? Deployment target: Server (Node.js hosting)
+   ? Development tools: (Press <space> to select, <a> to toggle all, <i> to invert selection)
+   ? Continuous integration: None
+   ? Version control system: Git
 
 4. install all package or library:
+
 ```sh
 npm i cookie-universal-nuxt
-````
+```
 
 after installing go to add this code to nuxt.config.js
 
@@ -100,9 +85,9 @@ modules: ['@nuxtjs/axios']
 
 ## Project Structure
 
-- `page`: 
-- `component`: 
-- `store`: 
+- `page`:
+- `component`:
+- `store`:
 - `plugin`:
 - `layout`:
 - `middleware`:
@@ -118,4 +103,5 @@ modules: ['@nuxtjs/axios']
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
 # nuxt-example-crud
