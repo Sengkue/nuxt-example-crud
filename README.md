@@ -34,6 +34,8 @@ These instructions will help you set up the project on your local machine.
    ```
 
 3. white install do this step:
+
+```javascript
    ? Project name: test-example
    ? Programming language: JavaScript
    ? Package manager: Yarn
@@ -47,6 +49,7 @@ These instructions will help you set up the project on your local machine.
    ? Development tools: (Press <space> to select, <a> to toggle all, <i> to invert selection)
    ? Continuous integration: None
    ? Version control system: Git
+```
 
 4. install all package or library:
 
