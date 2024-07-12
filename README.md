@@ -177,6 +177,23 @@ export default {
 </script>
 ```
 
+### if you want some pages use layout/blank.js
+
+```javascript
+<template>
+  <div>
+    hello world!
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'EcommerceLandingBlank',
+  layout: 'blank',
+};
+</script>
+```
+
 ### Running the Server
 
 1. To start project, run:
@@ -198,9 +215,235 @@ The server will run port (default: 3000).
 
 # Code
 
-## server.js
+## vuetify UI
+
+### data table with checkboxes
 
 ```javascript
+<template>
+  <div>
+    <v-data-table
+      v-model="selected"
+      :headers="headers"
+      :items="userList"
+      :single-select="singleSelect"
+      :options.sync="options"
+      :server-items-length="total"
+      :items-per-page="per_page"
+      item-key="id"
+      show-select
+      class="elevation-1"
+    >
+      <template #[`item.avatar`]="{ item }">
+        <v-avatar size="32">
+          <v-img :src="item.avatar" alt="Avatar"></v-img>
+        </v-avatar>
+      </template>
+
+      <template #top>
+        <v-switch
+          v-model="singleSelect"
+          label="Single select"
+          class="pa-3"
+        ></v-switch>
+      </template>
+    </v-data-table>
+    <v-btn
+      class="create-user-btn"
+      fixed
+      bottom
+      right
+      color="primary"
+      @click="saveToDatabase"
+      >save To Database</v-btn
+    >
+  </div>
+</template>
+
+<script>
+import { mapState, mapActions } from 'vuex'
+
+export default {
+  name: 'InspirePage',
+  data() {
+    return {
+      options: {},
+      singleSelect: false,
+      selected: [],
+      headers: [
+        { text: 'ID', value: 'id' },
+        { text: 'Email', value: 'email' },
+        { text: 'First Name', value: 'first_name' },
+        { text: 'Last Name', value: 'last_name' },
+        { text: 'Avatar', value: 'avatar' },
+      ],
+    }
+  },
+  computed: {
+    ...mapState({
+      userList: (state) => state.users,
+      currentPage: (state) => state.currentPage,
+      totalPages: (state) => state.totalPages,
+      selectedUser: (state) => state.selectedUser,
+      dialogVisible: (state) => state.dialogVisible,
+      total: (state) => state.total,
+      page: (state) => state.page,
+      per_page: (state) => parseInt(state.per_page),
+    }),
+  },
+
+  watch: {
+    options(value) {
+      const { itemsPerPage, page } = value
+      this.selectUsersTable({ per_page: itemsPerPage, page })
+      // this.$store.dispatch("selectUsersTable", { per_page: itemsPerPage, page })
+    },
+  },
+  created() {
+    this.selectUsers() // Initial fetch of users data
+  },
+  methods: {
+    ...mapActions([
+      'selectUsers',
+      'createNewUser',
+      'selectUsersTable',
+    ]),
+
+    saveToDatabase() {
+      this.$axios
+        .post('http://localhost:8080/employee/array', this.selected)
+        .then((res) => {
+          this.$success('Success!')
+        })
+        .catch((error) => {
+          this.$error('Already exists')
+          console.error('Error saving to database:', error)
+        })
+    },
+  },
+}
+</script>
+
+<style scoped>
+/* Add any scoped styles here */
+.create-user-btn {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1000;
+}
+</style>
+
+```
+
+## VueX or Store
+
+### example store/index.js 
+
+```javascript
+// store/index.js
+
+export const state = () => ({
+  users: [],
+  currentPage: 1,
+  totalPages: 0,
+  selectedUser: {}, // Added selectedUser state
+  dialogVisible: false, // Added dialogVisible state
+  total: 0,
+  page: 0,
+  per_page: 0,
+})
+
+export const mutations = {
+  setUsers(state, users) {
+    state.users = users
+  },
+  setCurrentPage(state, page) {
+    state.currentPage = page
+  },
+  setTotalPages(state, totalPages) {
+    state.totalPages = totalPages
+  },
+  setSelectedUser(state, user) {
+    state.selectedUser = user
+  },
+  setDialogVisible(state, visible) {
+    state.dialogVisible = visible
+  },
+  setTotal(state, total) {
+    state.total = total
+  },
+  setPage(state, page) {
+    state.page = page
+  },
+  setPerPage(state, data) {
+    state.per_page = data
+  },
+}
+
+export const actions = {
+  async selectUsersTable({ commit, state }, params) {
+    commit('setCurrentPage', params.page)
+    commit('setPerPage', params.per_page)
+
+    try {
+      const res = await this.$axios.get(`https://reqres.in/api/users`, {
+        params: { page: state.currentPage, per_page: state.per_page },
+      })
+      commit('setUsers', res.data.data)
+      commit('setTotalPages', res.data.total_pages)
+      commit('setTotal', res.data.total)
+      commit('setPage', res.data.page)
+      commit('setPerPage', res.data.per_page)
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+    }
+  },
+  async selectUsers({ commit, state }) {
+    try {
+      const res = await this.$axios.get(`https://reqres.in/api/users`, {
+        params: { page: state.currentPage, per_page: state.per_page },
+      })
+      console.log('show', res.data)
+      commit('setUsers', res.data.data)
+      commit('setTotalPages', res.data.total_pages)
+      commit('setTotal', res.data.total)
+      commit('setPage', res.data.page)
+      commit('setPerPage', res.data.per_page)
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+    }
+  },
+
+  async nextPage({ commit, dispatch, state }) {
+    if (state.currentPage < state.totalPages) {
+      commit('setCurrentPage', state.currentPage + 1)
+      await dispatch('selectUsers')
+    }
+  },
+  async prevPage({ commit, dispatch, state }) {
+    if (state.currentPage > 1) {
+      commit('setCurrentPage', state.currentPage - 1)
+      await dispatch('selectUsers')
+    }
+  },
+  async openDialog({ commit }, userId) {
+    try {
+      const res = await this.$axios.get(`https://reqres.in/api/users/${userId}`)
+      commit('setSelectedUser', res.data.data)
+      commit('setDialogVisible', true)
+    } catch (error) {
+      console.error('Error fetching user details:', error)
+    }
+  },
+
+  createNewUser({ commit }, data) {
+    this.$axios.post('https://reqres.in/api/users', data).then((res) => {
+      console.log(res.data)
+    })
+  },
+}
+
 
 ```
 
