@@ -54,7 +54,7 @@ These instructions will help you set up the project on your local machine.
 4. install all package or library:
 
 ```sh
-npm i cookie-universal-nuxt
+npm i cookie-universal-nuxt moment @nuxtjs/toast@1.0.0 @nuxtjs/axios
 ```
 
 after installing go to add this code to nuxt.config.js
@@ -62,29 +62,130 @@ after installing go to add this code to nuxt.config.js
 ```sh
 modules: [
 'cookie-universal-nuxt',
+'@nuxtjs/axios',
+'@nuxtjs/toast'
 ]
 ```
 
-<a href="https://www.npmjs.com/package/cookie-universal-nuxt" target="_blank">more detail</a>
+### details:
 
-5. here install axios:
-   ```sh
-   yarn add @nuxtjs/axios
-   npm install @nuxtjs/axios
-   ```
-   after that go to add this code to nuxt.config.js :
+<a href="https://www.npmjs.com/package/cookie-universal-nuxt" target="_blank">cookies more detail</a>
+<a href="https://www.npmjs.com/package/@nuxtjs/toast/v/1.0.0" target="_blank">toast more detail</a>
+<a href="https://axios.nuxtjs.org/setup/" target="_blank">axios more detail</a>
+<a href="https://www.npmjs.com/package/moment" target="_blank">moment more detail</a>
 
-```sh
-modules: ['@nuxtjs/axios']
+# Code
+
+## create folder plugins
+
+### plusgins/globle.js:
+
+```javascript
+import Vue from "vue";
+import moment from 'moment';
+if (!Vue.**my_mixin**) {
+Vue.**my_mixin** = true;
+Vue.mixin({
+ data() {
+   return {};
+ },
+ computed: {},
+ methods: {
+   formatPrice(value){
+     const val = (value / 1).toFixed(0).replace(",", ".");
+     return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+     },
+   currency(data) {
+     return this.$test(data, { precision: 0, symbol: "₭" }).format();
+   },
+   formatDate(dateString) {
+     const date = new Date(dateString);
+     const day = date.getDate();
+     const month = date.getMonth() + 1;
+     const year = date.getFullYear();
+     return `${day}-${month}-${year}`;
+   },
+   formatDateBill(date) {
+     return moment(date).format('DD/MM/YYYY, HH:mm:ss');
+   },
+ },
+});
+}
+```
+
+### plugins/axios.js:
+
+```javascript
+export default function (context) {
+  context.$axios.onRequest((config) => {
+    config.baseURL = context.app.$config.api
+    config.headers.common.Authorization = `SENG ${context.$cookies.get(
+      'token'
+    )}`
+  })
+  // context.$axios.onError((error) => {
+  // Sending the toast messages.
+  // if (error.response.status !== 401) context.$toast.error(error)
+  // return Promise.resolve(false)
+  // return false
+  // })
+}
+```
+
+## create folder middleware
+
+### check user are there token middleware/auth.js :
+
+```javascript
+export default function (context) {
+  if (!context.$cookies.get('token')) {
+    return context.redirect('/login')
+  }
+}
+```
+
+### check user are there token middleware/onLogin.js :
+
+```javascript
+export default function (context) {
+  if (context.$cookies.get('token')) {
+    return context.redirect('/')
+  }
+}
+```
+
+## folder layout
+
+### create new file example layout/blank.js
+
+```javascript
+<template>
+  <v-app :dark="dark">
+    <Nuxt/>
+  </v-app>
+</template>
+
+<script>
+export default {
+  name: 'EcommerceLandingBlank',
+  middleware: 'onLogin',
+  created(){
+    this.dark = this.$cookies.get('mode')
+    this.$vuetify.theme.dark = this.dark
+    },
+};
+</script>
 ```
 
 ### Running the Server
 
 1. To start project, run:
-   ```sh
-   npm run dev
-   ```
-   The server will run port (default: 3000).
+
+```sh
+npm run dev
+```
+
+The server will run port (default: 3000).
 
 ## Project Structure
 
