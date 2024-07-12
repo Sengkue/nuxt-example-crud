@@ -2,10 +2,10 @@
   <div>
     <v-data-table
       :headers="headers"
-      :items="employeeList.data"
+      :items="employeeList?.data"
       :options.sync="options"
-      :server-items-length="employeeList.total"
-      :items-per-page="employeeList.per_page"
+      :server-items-length="employeeList?.total"
+      :items-per-page="employeeList?.per_page"
       :item-key="selectEmployee?.data?.id"
       class="elevation-1"
       :footer-props="{
@@ -90,10 +90,7 @@ export default {
         email: '',
         avatar: '',
       },
-      options: {
-        itemsPerPage: 5,
-        page: 1,
-      },
+      options: {},
       headers: [
         { text: 'ID', value: 'id' },
         { text: 'Email', value: 'email' },
@@ -137,7 +134,11 @@ export default {
       this.$axios
         .delete(`http://localhost:8080/employee/${id}`)
         .then((res) => {
-          this.selectEmployee()
+          this.selectEmployee({
+            per_page: this.options.itemsPerPage,
+            page: this.options.page,
+          })
+
           this.$success('Delete success!')
         })
         .catch((error) => {
